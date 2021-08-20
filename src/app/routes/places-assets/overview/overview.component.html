@@ -1,0 +1,279 @@
+<page-header class="bg-blue-600" title="Übersicht / Anlage"></page-header>
+
+<mat-card>
+<form>
+  <mat-form-field class="m-r-8">
+    <input matInput [(ngModel)]="query.q" name="q" placeholder="{{translations.search_placeholder}}">
+  </mat-form-field>
+
+  <mat-form-field class="m-r-8">
+    <mat-select [(ngModel)]="query.sort" name="sort" placeholder="{{translations.sort_placeholder}}">
+      <mat-option>-- None --</mat-option>
+      <mat-option *ngFor="let option of sort_options" value="{{option.value}}">{{option.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="m-r-8">
+    <mat-select [(ngModel)]="query.order" name="order" placeholder="{{translations.sort_way_placeholder}}">
+      <mat-option>-- None --</mat-option>
+      <mat-option *ngFor="let option of sort_way_options" value="{{option.value}}">{{option.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button class="m-r-8" mat-raised-button color="primary" (click)="loadAssetsSearch()">{{translations.search}}</button>
+</form>
+</mat-card>
+
+<ng-container *ngFor="let data of list;trackBy:customQTrackBy">
+  <mat-card *ngIf="data.id !== assetPlace">
+    <mat-card-title>{{ data.city }}<span fxFlex></span>{{ data.last_changed_formatted }}</mat-card-title>
+    <mat-card-subtitle>{{ data.name }} | {{ data.city }}</mat-card-subtitle>
+    <div class="row" *ngIf="data.citrix">
+      <div class="w-100">
+        <b>Citrix-Benutzer</b>
+      </div>
+    </div>
+    <ng-container *ngIf="showTable">
+      <ng-container *ngFor="let item of data.citrix; trackBy: customFTrackBy">
+        <div class="row">
+          {{item.citrix_number}}
+          <ng-container *ngIf="item.name">
+            von {{item.name}} ({{item.serial}})
+          </ng-container>
+          <span fxFlex></span>
+          <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/citrix/edit/', item.id]">edit</mat-icon>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="!showTable">
+      <ng-container *ngFor="let item of data.citrix; trackBy: customFTrackBy">
+        <div class="row p-t-8">
+          {{item.citrix_number}}
+          <ng-container *ngIf="item.name"><br />
+            von {{item.name}} [{{item.serial}}]
+          </ng-container>
+          <span fxFlex></span>
+          <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/citrix/edit/', item.id]">edit</mat-icon>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="data.asset">
+      <div class="row"><div class="w-100">&nbsp;</div></div>
+      <div class="row">
+        <div class="w-100">
+          <b>Geräte</b>
+        </div>
+      </div>
+      <ng-container *ngIf="showTable">
+        <div class="row">
+          <div fxFlex>
+            <b>Name</b>
+          </div>
+          <div fxFlex>
+            <b>Type</b>
+          </div>
+          <div fxFlex>
+            <b>Seriennummer</b>
+          </div>
+          <div fxFlex>
+            <b>Citrix-Benutzer</b>
+          </div>
+          <div>
+            <b>Angeliefert</b>
+            <span class="edit-filler">&nbsp;</span>
+          </div>
+        </div>
+        <ng-container *ngFor="let item of data.asset; trackBy: customFTrackBy">
+          <div class="row">
+            <div fxFlex>
+              {{item.name}}
+            </div>
+            <div fxFlex>
+              {{item.type}}
+            </div>
+            <div fxFlex>
+              {{item.serial}}
+            </div>
+            <div fxFlex>
+              <ng-container *ngIf="item.citrix">
+                <ng-container *ngFor="let citrix_item of item.citrix let lastItem = last;">
+                  {{citrix_item.citrix_number}}<ng-container *ngIf="!lastItem">, </ng-container>
+                </ng-container>
+              </ng-container>
+              <ng-container *ngIf="!item.citrix">
+                &nbsp
+              </ng-container>
+            </div>
+            <div>
+              {{item.from_datetimez}}
+              <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/assets/edit/', item.id]">edit</mat-icon>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="!showTable">
+        <div>
+          <div>
+            <b>Name</b>
+          </div>
+          <div>
+            <b>Type</b>
+          </div>
+          <div>
+            <b>Seriennummer</b>
+          </div>
+          <div>
+            <b>Citrix-Benutzer</b>
+          </div>
+          <div>
+            <b>Angeliefert</b>
+            <span class="edit-filler">&nbsp;</span>
+          </div>
+        </div>
+        <ng-container *ngFor="let item of data.asset let lastItem = last; trackBy: customFTrackBy">
+          <div class="row p-t-8">
+            <div fxFlex>
+              {{item.name}}<br />
+              {{item.type}}<br />
+              {{item.serial}} <br />
+              <ng-container *ngIf="item.citrix">
+                <ng-container *ngFor="let citrix_item of item.citrix let lastItem = last;">
+                  {{citrix_item.citrix_number}}<ng-container *ngIf="!lastItem">, </ng-container>
+                </ng-container>
+              </ng-container>
+              <ng-container *!ngIf="item.citrix">
+                &nbsp;
+              </ng-container>
+              <br />
+              {{item.from_datetimez}}
+            </div>
+            <div>
+              <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/assets/edit/', item.id]">edit</mat-icon>
+            </div>
+          </div>
+          <mat-divider *ngIf="!lastItem"></mat-divider>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    <mat-card-actions *ngIf="data.id !== assetPlace" align="end">
+      <a mat-raised-button color="primary" [routerLink]="['/overview/return/edit/', data.id]">Neue Abholung</a>
+      <a mat-raised-button color="primary" [routerLink]="['/overview/delivery/edit/', data.id]">Neue Lieferung</a>
+    </mat-card-actions>
+  </mat-card>
+
+
+  <mat-expansion-panel class="m-b-16" *ngIf="data.id === assetPlace">
+    <mat-expansion-panel-header><h3>{{ data.city }}</h3><span fxFlex></span><h3>{{ data.last_changed_formatted }}</h3></mat-expansion-panel-header>
+    <mat-card-subtitle>{{ data.name }} | {{ data.city }}</mat-card-subtitle>
+    <div class="row" *ngIf="data.citrix">
+      <div class="w-100">
+        <b>Citrix-Benutzer</b>
+      </div>
+    </div>
+    <ng-container *ngIf="showTable">
+      <ng-container *ngFor="let item of data.citrix; trackBy: customFTrackBy">
+        <div class="row">
+          {{item.citrix_number}}
+          <ng-container *ngIf="item.name">
+            von {{item.name}} [{{item.serial}}]
+          </ng-container>
+          <span fxFlex></span>
+          <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/citrix/edit/', item.id]">edit</mat-icon>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="!showTable">
+      <ng-container *ngFor="let item of data.citrix; trackBy: customFTrackBy">
+        <div class="row p-t-8">
+          {{item.citrix_number}}
+          <ng-container *ngIf="item.name"><br />
+            von {{item.name}} [{{item.serial}}]
+          </ng-container>
+          <span fxFlex></span>
+          <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/citrix/edit/', item.id]">edit</mat-icon>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="data.asset">
+      <div class="row"><div class="w-100">&nbsp;</div></div>
+      <div class="row">
+        <div class="w-100">
+          <b>Geräte</b>
+        </div>
+      </div>
+      <ng-container *ngIf="showTable">
+        <div class="row">
+          <div fxFlex>
+            <b>Name</b>
+          </div>
+          <div fxFlex>
+            <b>Type</b>
+          </div>
+          <div fxFlex>
+            <b>Seriennummer</b>
+          </div>
+          <div>
+            <b>Angeliefert</b>
+            <span class="edit-filler">&nbsp;</span>
+          </div>
+        </div>
+        <ng-container *ngFor="let item of data.asset; trackBy: customFTrackBy">
+          <div class="row">
+            <div fxFlex>
+              {{item.name}}
+            </div>
+            <div fxFlex>
+              {{item.type}}
+            </div>
+            <div fxFlex>
+              {{item.serial}}
+            </div>
+            <div>
+              {{item.from_datetimez}}
+              <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/assets/edit/', item.id]">edit</mat-icon>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="!showTable">
+        <div>
+          <div>
+            <b>Name</b>
+          </div>
+          <div>
+            <b>Type</b>
+          </div>
+          <div>
+            <b>Seriennummer</b>
+          </div>
+          <div>
+            <b>Angeliefert</b>
+            <span class="edit-filler">&nbsp;</span>
+          </div>
+        </div>
+        <ng-container *ngFor="let item of data.asset let lastItem = last; trackBy: customFTrackBy">
+          <div class="row p-t-8">
+            <div fxFlex>
+              {{item.name}}<br />
+              {{item.type}}<br />
+              {{item.serial}} <br />
+              {{item.from_datetimez}}
+            </div>
+            <div>
+              <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/assets/edit/', item.id]">edit</mat-icon>
+            </div>
+          </div>
+          <mat-divider *ngIf="!lastItem"></mat-divider>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    <mat-card-actions *ngIf="data.id !== assetPlace" align="end">
+      <a mat-raised-button color="primary" [routerLink]="['/overview/return/edit/', data.id]">Neue Abholung</a>
+      <a mat-raised-button color="primary" [routerLink]="['/overview/delivery/edit/', data.id]">Neue Lieferung</a>
+    </mat-card-actions>
+  </mat-expansion-panel>
+</ng-container>
+
+<mat-paginator [length]="assetLength" [pageSize]="query.per_page" [pageSizeOptions]="[5,10,50,100]"
+               (page)="changePage($event)">
+</mat-paginator>

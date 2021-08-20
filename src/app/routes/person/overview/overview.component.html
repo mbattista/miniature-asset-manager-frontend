@@ -1,0 +1,115 @@
+<page-header class="bg-blue-600"></page-header>
+
+<mat-card>
+  <form>
+    <mat-form-field class="m-r-8">
+      <input matInput [(ngModel)]="query.q" name="q" placeholder="{{translations.search_placeholder}}">
+    </mat-form-field>
+
+    <mat-form-field class="m-r-8">
+      <mat-select [(ngModel)]="query.sort" name="sort" placeholder="{{translations.sort_placeholder}}">
+        <mat-option>-- None --</mat-option>
+        <mat-option *ngFor="let option of sort_options" value="{{option.value}}">{{option.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="m-r-8">
+      <mat-select [(ngModel)]="query.order" name="order" placeholder="{{translations.sort_way_placeholder}}">
+        <mat-option>-- None --</mat-option>
+        <mat-option *ngFor="let option of sort_way_options" value="{{option.value}}">{{option.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button class="m-r-8" mat-raised-button color="primary" (click)="loadUserSearch()">{{translations.search}}</button>
+  </form>
+  <div class="customizer-handle"
+       matTooltip="Neuen Benutzer erstellen">
+    <a mat-fab [routerLink]="['create']">
+      <mat-icon>add</mat-icon>
+    </a>
+  </div>
+</mat-card>
+
+<ng-container *ngIf="showTable">
+  <mat-card>
+  <mtx-grid [data]="list"
+            [columns]="columns"
+            [loading]="isLoading"
+            [multiSelectable]="multiSelectable"
+            [rowSelectable]="rowSelectable"
+            [hideRowSelectionCheckbox]="hideRowSelectionCheckbox"
+            [rowHover]="rowHover"
+            [rowStriped]="rowStriped"
+            [showToolbar]="showToolbar"
+            [columnHideable]="columnHideable"
+            [columnMovable]="columnMovable"
+            [expandable]="expandable"
+            [expansionTemplate]="expansionTpl"
+            [pageOnFront]="false"
+            [showPaginator]="showPaginator"
+            [pageSizeOptions]="[5,10,50,100]"
+            [pageIndex]="query.page"
+            [columnMenuButtonText]="columnMenuButtonText"
+            [toolbarTitle]="toolbarTitle"
+            [pageSize]="query.per_page"
+            [length]="assetLength"
+            (page)="changePage($event)"
+  >
+  </mtx-grid>
+  </mat-card>
+</ng-container>
+  <ng-template #expansionTpl let-row let-index="index" let-col="colDef">
+    {{translations.text}}:<br />
+    {{row.text}}
+  </ng-template>
+
+<ng-container *ngIf="!showTable">
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let data of list">
+      <mat-expansion-panel-header>
+        <mat-panel-description>
+          {{data.email}}
+        </mat-panel-description>
+        <mat-panel-title>{{data.first_name}} {{data.last_name}}</mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="row">
+        <div class="w-40">
+          Vorname:
+        </div>
+        <div class="w-60">
+          {{data.first_name}}
+        </div>
+      </div>
+      <div class="row">
+        <div class="w-40">
+          Nachname:
+        </div>
+        <div class="w-60">
+          {{data.last_name}}
+        </div>
+      </div>
+      <div class="row">
+        <div class="w-40">
+          Nickname:
+        </div>
+        <div class="w-60">
+          {{data.nickname}}
+        </div>
+      </div>
+      <div class="row">
+        <div class="w-40">
+          Email:
+        </div>
+        <div class="w-60">
+          {{data.email}}
+        </div>
+      </div>
+      <mat-action-row>
+        <button mat-button (click)="navigateEdit(data)">Editieren</button>
+      </mat-action-row>
+    </mat-expansion-panel>
+  </mat-accordion>
+  <mat-paginator [length]="assetLength" [pageSize]="query.per_page" [pageSizeOptions]="[5,10,50,100]"
+                 (page)="changePage($event)">
+  </mat-paginator>
+</ng-container>

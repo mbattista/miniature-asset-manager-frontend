@@ -1,0 +1,184 @@
+
+<div class="matero-container-wrap"
+     [ngClass]="{'matero-sidenav-collapsed': options.sidenavCollapsed && options.navPos!=='top',
+                 'matero-navbar-side': options.navPos==='side',
+                 'matero-navbar-top': options.navPos==='top',
+                 'matero-header-above': options.headerPos==='above',
+                 'matero-header-fixed': options.headerPos==='fixed',
+                 'matero-header-white': options.theme==='light'}"
+     [dir]="options.dir">
+  <ng-progress></ng-progress>
+
+  <!-- Header Above -->
+  <app-header #header class="matero-header"
+              *ngIf="options.showHeader && options.headerPos==='above'"
+              [showBranding]="true"
+              (toggleSidenav)="sidenav.toggle()"
+              (toggleSidenavNotice)="sidenavNotice.toggle()"
+              (searchInput)="getSearchResults($event)"
+              (totalResults)="getTotalResults($event)"
+              (searchVisible)="getSearchVisible($event)"
+              (searchTerm)="getSearchTerm($event)"
+  >
+  </app-header>
+
+  <mat-sidenav-container class="matero-container" autosize autoFocus>
+    <mat-sidenav #sidenav class="matero-sidenav"
+                 [mode]="isOver ? 'over' : 'side'"
+                 [opened]="options.navPos==='side' && options.sidenavOpened && !isOver"
+                 (openedChange)="sidenavOpenedChange($event)"
+                 (closedStart)="sidenavCloseStart()">
+      <app-sidebar [showToggle]="!isOver"
+                   [showUser]="options.showUserPanel"
+                   [showHeader]="options.headerPos!=='above'"
+                   (toggleCollapsed)="toggleCollapsed()"
+                   [toggleChecked]="options.sidenavCollapsed">
+      </app-sidebar>
+    </mat-sidenav>
+
+    <mat-sidenav #sidenavNotice position="end" mode="over">
+      <app-sidebar-notice></app-sidebar-notice>
+    </mat-sidenav>
+
+    <mat-sidenav-content #content class="matero-content-wrap">
+      <app-header #header class="matero-header"
+                  *ngIf="options.showHeader && options.headerPos!=='above'"
+                  [showToggle]="!options.sidenavCollapsed && options.navPos!=='top'"
+                  [showBranding]="options.navPos==='top'"
+                  (toggleSidenav)="sidenav.toggle()"
+                  (toggleSidenavNotice)="sidenavNotice.toggle()"
+                  (searchInput)="getSearchResults($event)"
+                  (totalResults)="getTotalResults($event)"
+                  (searchVisible)="getSearchVisible($event)"
+                  (searchTerm)="getSearchTerm($event)"
+      >
+      </app-header>
+
+      <app-topmenu *ngIf="options.navPos==='top'"></app-topmenu>
+
+      <div class="matero-content">
+        <router-outlet></router-outlet>
+
+        <div class="search-container" *ngIf="(search_results.length > 0 && search_visible && search_term !== '')">
+          <div class="search-total">Ungefähr: {{totalResults}} Ergebnisse</div>
+          <div class="search-container-inner">
+            <mat-nav-list>
+              <mat-list-item class="search-results" *ngFor="let item of search_results">
+                <ng-container *ngIf="(item.isType && item.isType == 'asset')">
+                  <a [routerLink]="['/data/assets/edit/', item.id ]" (click)="close()">
+                    <h3 matLine>Gerät | Name: {{ item.name }}</h3>
+                    <p>
+                      <span matLine>Type: {{ item.type }}</span>
+                      <span matLine>Seriennummer: {{ item.serial }}</span>
+                      <span matLine>Standort: {{ item.place_name }} | {{ item.city }} {{ item.street }}</span>
+                      <span matLine>Suchtreffer:</span>
+                      <ng-container *ngFor="let sub_item of item | keyvalue">
+                        <ng-container *ngIf="sub_item.value && isString(sub_item.value) && sub_item.value.indexOf(search_term) >= 0">
+                          <span matLine [innerHTML]="highlightText(sub_item)"></span>
+                        </ng-container>
+                      </ng-container>
+                      <span matLine>Relevanz: {{ item.weight }}</span>
+                    </p>
+                  </a>
+                </ng-container>
+                <ng-container *ngIf="(item.isType && item.isType == 'places_assets')">
+                  <a [routerLink]="['/data/places-assets/edit/', item.id ]" (click)="close()">
+                    <h3 matLine>Umbuchung | Standort: {{ item.place_name }} -> Geräte-Name: {{ item.asset_name }}</h3>
+                    <p>
+                      <span matLine>Type: {{ item.type }}</span>
+                      <span matLine>Von: {{ item.from_datetimez }}</span>
+                      <span matLine>Bis: {{ item.until_datetimez }}</span>
+                      <span matLine>Suchtreffer:</span>
+                      <ng-container *ngFor="let sub_item of item | keyvalue">
+                        <ng-container *ngIf="sub_item.value && isString(sub_item.value) && sub_item.value.indexOf(search_term) >= 0">
+                          <span matLine [innerHTML]="highlightText(sub_item)"></span>
+                        </ng-container>
+                      </ng-container>
+                      <span matLine>Relevanz: {{ item.weight }}</span>
+                    </p>
+                  </a>
+                </ng-container>
+                <ng-container *ngIf="(item.isType && item.isType == 'place')">
+                  <a [routerLink]="['/data/places/edit/', item.id ]" (click)="close()">
+                    <h3 matLine>Standort | Name: {{ item.name }}</h3>
+                    <p>
+                      <span matLine>Strasse: {{ item.street }} {{ item.number }}</span>
+                      <span matLine>Ort: {{ item.postcode }} {{ item.city }}</span>
+                      <span matLine>Suchtreffer:</span>
+                      <ng-container *ngFor="let sub_item of item | keyvalue">
+                        <ng-container *ngIf="sub_item.value && isString(sub_item.value) && sub_item.value.indexOf(search_term) >= 0">
+                          <span matLine [innerHTML]="highlightText(sub_item)"></span>
+                        </ng-container>
+                      </ng-container>
+                      <span matLine>Relevanz: {{ item.weight }}</span>
+                    </p>
+                  </a>
+                </ng-container>
+                <ng-container *ngIf="(item.isType && item.isType == 'end_user')">
+                  <a [routerLink]="['/data/place_users/edit/', item.id ]" (click)="close()">
+                    <h3 matLine>Ansprechpartner | Name: {{ item.first_name }} {{ item.last_name }}</h3>
+                    <div>
+                      <span matLine>Standort: {{ item.name }}</span>
+                      <span matLine>Tel: {{ item.tel }}</span>
+                      <span *ngIf="item.mobile" matLine>Mobile: {{item.mobile}}</span>
+                      <span matLine>Suchtreffer:</span>
+                      <ng-container *ngFor="let sub_item of item | keyvalue">
+                        <ng-container *ngIf="sub_item.value && isString(sub_item.value) && sub_item.value.indexOf(search_term) >= 0">
+                          <span matLine [innerHTML]="highlightText(sub_item)"></span>
+                        </ng-container>
+                      </ng-container>
+                      <span matLine>Relevanz: {{ item.weight }}</span>
+                    </div>
+                  </a>
+                </ng-container>
+                <ng-container *ngIf="(item.isType && item.isType == 'citrix')">
+                  <a [routerLink]="['/data/citrix/edit/', item.id ]" (click)="close()">
+                    <h3 matLine>Citrix-Benutzer | {{ item.citrix_number }}</h3>
+                    <p>
+                      <span matLine>Suchtreffer:</span>
+                      <ng-container *ngFor="let sub_item of item | keyvalue">
+                        <ng-container *ngIf="sub_item.value && isString(sub_item.value) && sub_item.value.indexOf(search_term) >= 0">
+                          <span matLine [innerHTML]="highlightText(sub_item)"></span>
+                        </ng-container>
+                      </ng-container>
+                      <span matLine>Relevanz: {{ item.weight }}</span>
+                    </p>
+                  </a>
+                </ng-container>
+                <ng-container *ngIf="(item.isType && item.isType == 'external_user')">
+                  <a [routerLink]="['/data/external-persons/', item.external_person ]" (click)="close()">
+                    <h3 matLine>Externer Benutzer | {{ item.external_person }}</h3>
+                    <p>
+                      <span matLine>Suchtreffer:</span>
+                      <ng-container *ngFor="let sub_item of item | keyvalue">
+                        <ng-container *ngIf="sub_item.value && isString(sub_item.value) && sub_item.value.indexOf(search_term) >= 0">
+                          <span matLine [innerHTML]="highlightText(sub_item)"></span>
+                        </ng-container>
+                      </ng-container>
+                      <span matLine>Relevanz: {{ item.weight }}</span>
+                    </p>
+                  </a>
+                </ng-container>
+                <ng-container *ngIf="(item.isType && item.isType == 'user')">
+                  <a [routerLink]="['/data/persons/', item.id ]" (click)="close()">
+                    <h3 matLine>Benutzer | {{ item.first_name }} {{ item.last_name }}</h3>
+                    <p>
+                      <span matLine>Suchtreffer:</span>
+                      <ng-container *ngFor="let sub_item of item | keyvalue">
+                        <ng-container *ngIf="sub_item.value && isString(sub_item.value) && sub_item.value.indexOf(search_term) >= 0">
+                          <span matLine [innerHTML]="highlightText(sub_item)"></span>
+                        </ng-container>
+                      </ng-container>
+                      <span matLine>Relevanz: {{ item.weight }}</span>
+                    </p>
+                  </a>
+                </ng-container>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+            </mat-nav-list>
+          </div>
+        </div>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

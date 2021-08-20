@@ -1,0 +1,28 @@
+<nav aria-label="breadcrumb">
+  <ol class="matero-breadcrumb">
+    <li class="matero-breadcrumb-item"
+        *ngFor="let navlink of checkNav(nav); trackBy: trackByNavlink; first as isFirst;">
+      <ng-container *ngIf="!navlink.startsWith('hidden_')">
+      <a href="#" class="link" *ngIf="isFirst">{{navlink}}</a>
+      <ng-container *ngIf="!isFirst">
+        <mat-icon class="chevron">chevron_right</mat-icon>
+        <ng-container *ngIf="(navlink === 'menu.data.citrix')">
+          <a href="#/data/citrix" class="link">{{navlink | translate}}</a>
+        </ng-container>
+        <ng-container *ngIf="(navlink === 'menu.data.places')">
+          <a href="#/data/places" class="link">{{navlink | translate}}</a>
+        </ng-container>
+        <ng-container *ngIf="(navlink === 'menu.data.assets')">
+          <a href="#/data/assets" class="link">{{navlink | translate}}</a>
+        </ng-container>
+        <ng-container *ngIf="(navlink === 'place_user')">
+          <a href="#/data/places/edit/{{id}}" class="link">{{name}}</a>
+        </ng-container>
+        <ng-container *ngIf="(navlink !== 'menu.data.citrix') && (navlink !== 'menu.data.places') && (navlink !== 'menu.data.assets') && (navlink !== 'place_user')">
+          <span class="link">{{navlink | translate}}</span>
+        </ng-container>
+      </ng-container>
+      </ng-container>
+    </li>
+  </ol>
+</nav>

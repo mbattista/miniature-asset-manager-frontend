@@ -1,0 +1,23 @@
+version: '3.5'
+
+services:
+
+  npm-test:
+    image: node:latest
+    volumes:
+      - type: bind
+        source: .
+        target: /var/asset
+    working_dir: /var/asset/
+    command: sleep infinity
+
+  angular:
+    image: node:latest
+    volumes:
+      - type: bind
+        source: .
+        target: /var/asset
+    ports:
+      - '4200:4200'
+    working_dir: /var/asset/
+    command: npm run hmr

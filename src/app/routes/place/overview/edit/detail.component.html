@@ -1,0 +1,230 @@
+<page-header [title]="placeTitle" class="bg-blue-600"></page-header>
+
+<div fxLayout="row wrap" class="matero-row">
+  <div fxFlex="100" class="matero-col">
+    <mat-card>
+      <mat-tab-group class="m--16">
+        <mat-tab label="Standort">
+          <div class="m-16">
+            <mat-spinner *ngIf="isLoadingPlace$.value" color="indeterminate" [strokeWidth]="1"  aria-label="Loading"></mat-spinner>
+            <form [formGroup]="reactiveForm" class="form-field-full">
+              <div *ngIf="!isLoadingPlace$.value" fxLayout="row wrap" fxLayoutGap="8px grid">
+
+                <div fxFlex="100" fxFlex.lt-sm="100">
+                  <mat-form-field>
+                    <mat-label>{{ 'place.name_label' | translate }}</mat-label>
+                    <input matInput placeholder="{{ 'place.name_placeholder' | translate }}" formControlName="place_name"
+                           required>
+                    <mat-error *ngIf="reactiveForm.get('place_name').invalid">{{ 'general.input_required' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+                  <div class="row">
+                    <div class="col-sm-6">
+                  <mat-form-field>
+                    <mat-label>{{ 'place.street_label' | translate }}</mat-label>
+                    <input matInput placeholder="{{ 'place.street_placeholder' | translate }}" required formControlName="place_street">
+                    <mat-error *ngIf="reactiveForm.get('place_street').invalid">{{ 'general.input_required' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+                    </div>
+                    <div class="col-sm-6">
+                  <mat-form-field>
+                    <mat-label>{{ 'place.number_label' | translate }}</mat-label>
+                    <input matInput placeholder="{{ 'place.number_placeholder' | translate }}" required formControlName="place_number">
+                    <mat-error *ngIf="reactiveForm.get('place_number').invalid">{{ 'general.input_required' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6">
+                  <mat-form-field>
+                    <mat-label>{{ 'place.postcode_label' | translate }}</mat-label>
+                    <input matInput placeholder="{{ 'place.postcode_placeholder' | translate }}" required formControlName="place_postcode">
+                    <mat-error *ngIf="reactiveForm.get('place_postcode').invalid">{{ 'general.input_required' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+                    </div>
+                    <div class="col-sm-6">
+                  <mat-form-field>
+                    <mat-label>{{ 'place.city_label' | translate }}</mat-label>
+                    <input matInput placeholder="{{ 'place.city_placeholder' | translate }}" required formControlName="place_city">
+                    <mat-error *ngIf="reactiveForm.get('place_city').invalid">{{ 'general.input_required' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+                    </div>
+                  </div>
+                  <mat-form-field>
+                    <mat-label>{{ 'place.tel1_label' | translate }}</mat-label>
+                    <input matInput placeholder="{{ 'place.tel1_placeholder' | translate }}" formControlName="place_tel1">
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>{{ 'place.tel2_label' | translate }}</mat-label>
+                    <input matInput placeholder="{{ 'place.tel2_placeholder' | translate }}" formControlName="place_tel2">
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>{{ 'place.tel3_label' | translate }}</mat-label>
+                    <input matInput placeholder="{{ 'place.tel3_placeholder' | translate }}" formControlName="place_tel3">
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>{{ 'place.tel4_label' | translate }}</mat-label>
+                    <input matInput placeholder="{{ 'place.tel4_placeholder' | translate }}" formControlName="place_tel4">
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>{{ 'place.fax_label' | translate }}</mat-label>
+                    <input matInput placeholder="{{ 'place.fax_placeholder' | translate }}" formControlName="place_fax">
+                  </mat-form-field>
+                  <mat-form-field class="w-full">
+                    <mat-label>{{ 'asset.citrix_label' | translate }}</mat-label>
+                    <mtx-select
+                      [items]="citrix_items"
+                      bindLabel="citrix_number"
+                      bindValue="id"
+                      formControlName="place_citrix"
+                      [multiple]=true
+                      [typeahead]="citrixInput$"
+                    ></mtx-select>
+                    <mat-error *ngIf="reactiveForm.get('place_citrix').invalid">{{ 'general.input_duplicate' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>{{ 'place.website_label' | translate }}</mat-label>
+                    <input matInput placeholder="{{ 'place.website_placeholder' | translate }}" formControlName="place_website">
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>{{ 'place.email_label' | translate }}</mat-label>
+                    <input matInput placeholder="{{ 'place.email_placeholder' | translate }}" formControlName="place_email">
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>{{ 'place.opening_times_label' | translate }}</mat-label>
+                    <textarea matInput name="place_opening_times" formControlName="place_opening_times"></textarea>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>Text</mat-label>
+                    <textarea matInput name="place_text" formControlName="place_text"></textarea>
+                  </mat-form-field>
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <mat-slide-toggle name="place_active" color="primary" formControlName="isActive">
+                        {{ 'place.active_label' | translate }}
+                      </mat-slide-toggle>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button mat-raised-button color="primary" class="m-t-8" (click)="onSubmitSave()" [disabled]="reactiveForm.invalid">{{ 'place.save' | translate }}</button>
+            </form>
+          </div>
+        </mat-tab>
+        <mat-tab label="Ansprechpartner" [disabled]="isCreate">
+          <div class="m-16">
+            <mat-spinner *ngIf="isLoadingUsers$.value" color="indeterminate" [strokeWidth]="1"  aria-label="Loading"></mat-spinner>
+            <mat-accordion *ngIf="!isLoadingUsers$.value">
+             <ng-container *ngFor="let au of placesUsers">
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-description>
+                      {{au.text}}
+                    </mat-panel-description>
+                    <mat-panel-title>{{au.first_name}} {{au.last_name}}</mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div class="row" *ngIf="au.tel">
+                    <div class="w-40">
+                      Telefon:
+                    </div>
+                    <div class="w-60">{{au.tel}}
+                    </div>
+                  </div>
+                  <div class="row" *ngIf="au.mobile">
+                    <div class="w-40">
+                      Handy:
+                    </div>
+                    <div class="w-60">{{au.mobile}}
+                    </div>
+                  </div>
+                  <div class="row" *ngIf="au.email">
+                    <div class="w-40">
+                      Email:
+                    </div>
+                    <div class="w-60">{{au.email}}
+                    </div>
+                  </div>
+                  <mat-card-actions align="end">
+                    <a mat-raised-button color="primary" [routerLink]="['/data/place_users/edit/' + au.id]">bearbeiten</a>
+                  </mat-card-actions>
+                </mat-expansion-panel>
+              </ng-container>
+            </mat-accordion>
+            <button mat-raised-button color="primary" [routerLink]="['/data/place_users/create/place/' + placeId]">
+              Neuen Ansprechpartner anlegen
+            </button>
+          </div>
+        </mat-tab>
+        <mat-tab label="Geräte" [disabled]="isCreate">
+          <div class="m-16">
+            <mat-spinner *ngIf="isLoadingAssets$.value" color="indeterminate" [strokeWidth]="1"  aria-label="Loading"></mat-spinner>
+            <mat-list *ngIf="!isLoadingAssets$.value">
+              <mat-list-item *ngIf="showTable">
+                <span fxFlex><b>Name</b></span><span fxFlex><b>Type</b></span><span fxFlex><b>Seriennummer</b></span>
+                <span><b>Angeliefert</b><span class="edit-filler">&nbsp;</span></span>
+              </mat-list-item>
+              <mat-list-item style="height: initial" *ngIf="!showTable"><div class="p-8">
+                <div><b>Name</b></div><div><b>Type</b></div><div><b>Seriennummer</b></div>
+                <div><b>Angeliefert</b><span class="edit-filler">&nbsp;</span></div>
+              </div></mat-list-item>
+              <mat-divider></mat-divider>
+              <ng-container *ngFor="let asset of assets let lastItem = last;">
+                <mat-list-item *ngIf="showTable">
+                  <span fxFlex>{{asset.name}}</span><span fxFlex>{{asset.type}}</span><span fxFlex>{{asset.serial}}</span>
+                  {{asset.from_datetimez ? asset.from_datetimez.split(' ')[0] : ''}}
+                  <div>
+                    <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/assets/edit/', asset.asset_id]">edit</mat-icon>
+                    <mat-icon *ngIf="isAdmin" color="warn" style="cursor: pointer" (click)="deleteAsset(asset.asset_id)">delete</mat-icon>
+                  </div>
+                </mat-list-item>
+                <mat-list-item style="height: initial" *ngIf="!showTable"><div class="p-8">
+                  <div>{{asset.name ? asset.name : '-'}}</div><div>{{asset.type ? asset.type : '-'}}</div><div>{{asset.serial ? asset.serial : '-'}}</div>
+                  <div>{{asset.from_datetimez ? asset.from_datetimez.split(' ')[0] : ''}}</div>
+                </div></mat-list-item>
+                <mat-divider *ngIf="!lastItem"></mat-divider>
+              </ng-container>
+            </mat-list>
+          </div>
+        </mat-tab>
+        <mat-tab label="Historie" [disabled]="isCreate">
+          <div class="m-16">
+            <mat-spinner *ngIf="isLoadingHistory$.value" color="indeterminate" [strokeWidth]="1"  aria-label="Loading"></mat-spinner>
+            <mat-list *ngIf="!isLoadingHistory$.value">
+              <mat-list-item *ngIf="showTable">
+                <span fxFlex><b>Name</b></span><span fxFlex><b>Type</b></span><span fxFlex><b>Seriennummer</b></span><span fxFlex><b>Aktueller Standort</b></span><span fxFlex><b>Lieferant</b></span><span fxFlex><b>Angeliefert</b></span><b>Abgeholt</b><span class="edit-filler">&nbsp;</span>
+              </mat-list-item>
+              <mat-list-item style="height: initial" *ngIf="!showTable"><div class="p-8">
+                <div><b>Name</b></div><div><b>Type</b></div><div><b>Seriennummer</b></div><div><b>Aktueller Standort</b></div><div><b>Lieferant</b></div><div><b>Angeliefert</b></div><div><b>Abgeholt</b><span class="edit-filler">&nbsp;</span></div>
+              </div>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+              <ng-container *ngFor="let pa of placesAssets let lastItem = last;">
+                <mat-list-item *ngIf="showTable">
+                  <span fxFlex>{{pa.name}}</span><span fxFlex>{{pa.type}}</span><span fxFlex>{{pa.serial}}</span><span fxFlex>{{pa.current_place_name}}, {{pa.current_city}}</span><span fxFlex>{{pa.dp_first_name}} {{pa.dp_last_name}} {{pa.external_person}}</span><span fxFlex>{{pa.from_datetimez ? pa.from_datetimez.split(' ')[0] : ''}}</span>{{pa.until_datetimez ? pa.until_datetimez.split(' ')[0] : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}}
+                  <div>
+                    <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/assets/edit/', pa.asset_id]">edit</mat-icon>
+                  </div>
+                </mat-list-item>
+                <mat-list-item style="height: initial" *ngIf="!showTable"><div class="p-8">
+                  <div>{{pa.name}}</div><div>{{pa.type}}</div><div>{{pa.serial}}</div><div>{{pa.current_place_name}}, {{pa.current_city}}</div>
+                  <div>
+                    {{pa.from_datetimez ? pa.from_datetimez.split(' ')[0] : ''}} - {{pa.until_datetimez ? pa.until_datetimez.split(' ')[0] : ''}}
+                    <div>
+                      <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/assets/edit/', pa.asset_id]">edit</mat-icon>
+                    </div>
+                  </div>
+                </div></mat-list-item>
+                <mat-divider *ngIf="!lastItem"></mat-divider>
+              </ng-container>
+            </mat-list>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card>
+  </div>
+</div>

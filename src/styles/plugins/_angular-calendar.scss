@@ -1,0 +1,81 @@
+@import '~angular-calendar/css/angular-calendar.css';
+
+.cal-month-view {
+  // First define some global color variables for your app, these are just for the demo, they can be anything you like
+  $bg-dark-primary: #424242;
+  $bg-dark-secondary: #3b3b3b;
+  $bg-active: #ffd740;
+  $text-color: white;
+  $border-color: rgba(0, 0, 0, 0.6);
+
+  // Everything else below is just themes the demo, it's probably not relevant to your app
+  background-color: $bg-dark-primary;
+  color: $text-color;
+
+  .card {
+    border-color: $border-color;
+  }
+
+  .cal-cell-row.cal-header {
+    background-color: $bg-dark-secondary;
+  }
+
+  .cal-cell-row .cal-cell:hover, .cal-month-view {
+    color: $bg-active;
+  }
+
+  .cal-cell-row .cal-cell:hover, .cal-cell.cal-has-events.cal-open {
+    background-color: $bg-dark-primary;
+  }
+
+  .cal-day-cell.cal-today {
+    background-color: #1e88e5;
+  }
+
+  .cal-cell-row:hover {
+    background-color: $bg-dark-secondary;
+  }
+
+  .cal-days .cal-cell-row {
+    border-bottom-color: $bg-dark-secondary;
+  }
+
+  .cal-cell.cal-has-events.cal-open {
+    background-color: $bg-active;
+  }
+
+  .cal-days {
+    border-color: $bg-dark-secondary;
+  }
+
+  .cal-day-cell:not(:last-child) {
+    border-right-color: $bg-dark-secondary;
+  }
+
+  .cal-day-cell.cal-weekend .cal-day-number {
+    color: #1e88e5;
+  }
+
+  .card-header {
+    background-color: $bg-dark-secondary;
+  }
+
+  .card-body {
+    background-color: $bg-dark-primary;
+  }
+
+  .nav-tabs {
+    border-bottom-color: $border-color;
+  }
+
+  .nav-tabs .nav-link.active {
+    background-color: $bg-dark-primary;
+    color: $text-color;
+    border-color: $border-color;
+  }
+
+  .nav-tabs .nav-link:hover,
+  .nav-tabs .nav-link:focus {
+    border-color: $border-color;
+  }
+}

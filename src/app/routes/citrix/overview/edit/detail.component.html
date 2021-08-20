@@ -1,0 +1,54 @@
+<page-header [title]="citrixTitle"  class="bg-blue-600"></page-header>
+
+<div fxLayout="row wrap" class="matero-row">
+  <div fxFlex="100" class="matero-col">
+    <mat-card>
+      <mat-tab-group class="m--16">
+        <mat-tab label="Gerät">
+          <div class="m-16">
+            <mat-spinner *ngIf="isLoadingCitrix$.value" color="indeterminate" [strokeWidth]="1"  aria-label="Loading"></mat-spinner>
+            <form [formGroup]="reactiveForm" class="form-field-full">
+              <div *ngIf="!isLoadingCitrix$.value" fxLayout="row wrap" fxLayoutGap="8px grid">
+
+                <div fxFlex="100" fxFlex.lt-sm="100">
+                  <mat-form-field>
+                    <mat-label>Citrix Benutzer</mat-label>
+                    <input matInput placeholder="Citrix-ID" formControlName="citrix_number"
+                           required>
+                    <mat-error *ngIf="reactiveForm.get('citrix_number').errors?.required">{{ 'general.input_required' | translate }}
+                    </mat-error>
+                    <mat-error *ngIf="reactiveForm.get('citrix_number').errors?.duplicate">Citrix Benutzer bereits vorhanden
+                    </mat-error>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>Passwort</mat-label>
+                    <input matInput placeholder="Passwort" formControlName="password">
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>Showsoft-ID</mat-label>
+                    <input matInput placeholder="Showsoft-ID" formControlName="show_id">
+                  </mat-form-field>
+                </div>
+              </div>
+              <button mat-raised-button color="primary" class="m-t-8" (click)="onSubmitSave()" [disabled]="reactiveForm.invalid">{{ isCreate ? ('Erstellen') : 'Änderung speichenr' }}</button>
+            </form>
+          </div>
+        </mat-tab>
+        <mat-tab [disabled]="isCreate" label="In Benutzung bei folgenden Geräten">
+          <mat-spinner *ngIf="isLoadingAsset$.value" color="indeterminate" [strokeWidth]="1"  aria-label="Loading"></mat-spinner>
+          <mat-list *ngIf="!isLoadingAsset$.value">
+            <mat-list-item><span fxFlex><b>Geräte-Name</b></span><span fxFlex><b>Type</b></span><span fxFlex><b>Seriennummer</b></span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></mat-list-item>
+            <ng-container *ngFor="let pa of assets">
+              <mat-divider></mat-divider>
+                <mat-list-item>
+                  <span fxFlex>{{ pa.name }}</span><span fxFlex>{{ pa.type }}</span><span fxFlex>{{ pa.serial }}</span><span>
+                    <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/assets/edit/', pa.id]">edit</mat-icon>
+                  </span>
+                </mat-list-item>
+            </ng-container>
+          </mat-list>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card>
+  </div>
+</div>

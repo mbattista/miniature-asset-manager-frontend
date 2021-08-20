@@ -1,0 +1,29 @@
+<page-header [title]="title" class="bg-blue-600"></page-header>
+
+<div fxLayout="row wrap" class="matero-row">
+  <div fxFlex="100" fxFlex.lt-sm="100" class="matero-col">
+    <mat-card>
+      <div class="m-16">
+        <mat-spinner *ngIf="isLoading$.value" color="indeterminate" [strokeWidth]="1"  aria-label="Loading"></mat-spinner>
+        <mat-list *ngIf="!isLoading$.value">
+          <mat-list-item *ngIf="showTable"><span fxFlex><b>Standort-Name</b></span><span fxFlex><b>Standort-Stadt</b></span><span fxFlex><b>Lieferant</b></span><span fxFlex><b>Anlieferdatum</b></span><span><b>Abholdatum</b></span>
+            <div>&nbsp;</div>
+          </mat-list-item>
+          <ng-container *ngFor="let pa of list">
+            <mat-divider></mat-divider>
+            <mat-list-item *ngIf="showTable"><span fxFlex>{{pa.place_name}}</span><span fxFlex>{{pa.city}}</span><span fxFlex>{{pa.dp_first_name}} {{pa.dp_last_name}} {{pa.external_person}}</span><span fxFlex>{{pa.iso_date_from ? pa.iso_date_from.split(' ')[0] : '&nbsp;'}}</span><span>{{pa.iso_date_until ? pa.iso_date_until.split(' ')[0] : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}}</span>
+              <div>
+                <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/places/edit/', pa.place_id]">edit</mat-icon>
+              </div>
+            </mat-list-item>
+            <mat-list-item style="height: initial" *ngIf="!showTable"><div class="p-8"><div>{{pa.place_name}}</div><div>{{pa.city}}</div><div>{{pa.dp_first_name}} {{pa.dp_last_name}} {{pa.external_person}}</div><div>{{pa.iso_date_from ? pa.iso_date_from.split(' ')[0] : ''}} - {{pa.iso_date_until ? pa.iso_date_until.split(' ')[0] : ''}}
+              <div>
+                <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/places/edit/', pa.place_id]">edit</mat-icon>
+              </div>
+            </div></div></mat-list-item>
+          </ng-container>
+        </mat-list>
+      </div>
+    </mat-card>
+  </div>
+</div>

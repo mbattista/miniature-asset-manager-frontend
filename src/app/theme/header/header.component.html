@@ -1,0 +1,18 @@
+<mat-toolbar class="matero-toolbar">
+    <button mat-icon-button class="matero-toolbar-button" *ngIf="showToggle"
+            (click)="toggleSidenav.emit()">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <app-branding *ngIf="showBranding"></app-branding>
+
+    <input fxFlex matInput #searchinput id="search-input" type="text" (keyup)="onFieldChange($event)" (blur)="onBlur($event)" (focus)="onFocus($event)" />
+
+    <button mat-icon-button class="matero-toolbar-button">
+      <mat-icon (click)="changeSearchClicked()">close</mat-icon>
+    </button>
+
+    <app-translate fxHide></app-translate>
+
+    <app-user></app-user>
+</mat-toolbar>

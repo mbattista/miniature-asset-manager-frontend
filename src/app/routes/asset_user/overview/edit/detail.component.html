@@ -1,0 +1,84 @@
+<page-header [title]="assetUserTitle" [nav]="nav" class="bg-blue-600"></page-header>
+
+<div fxLayout="row wrap" class="matero-row">
+  <div fxFlex="100" fxFlex.lt-sm="100" class="matero-col">
+    <mat-card>
+      <mat-spinner *ngIf="isLoadingAsset$.value" color="indeterminate" [strokeWidth]="1"  aria-label="Loading"></mat-spinner>
+      <mat-card-title>Details</mat-card-title>
+      <form [formGroup]="reactiveForm" class="form-field-full">
+        <div *ngIf="!isLoadingAsset$.value" fxLayout="row wrap" fxLayoutGap="8px grid">
+
+          <div fxFlex="100" fxFlex.lt-sm="100">
+            <mat-form-field class="w-full">
+              <mat-label>{{ 'asset_user.place' | translate }}</mat-label>
+              <mtx-select
+                [items]="place_items"
+                bindLabel="name"
+                bindValue="id"
+                [disabled]="!canEditPlace"
+                [searchFn]="customSearchFn"
+                formControlName="asset_user_place">
+                <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                  <div><span>Name: </span><span>{{item.name}}</span></div>
+                  <small><b>Strasse:</b><span> {{item.street}}</span> | <b>Ort:</b><span> {{item.city}}</span></small>
+                </ng-template>
+              </mtx-select>
+            </mat-form-field>
+            <div class="row">
+              <div class="col-sm-6">
+            <mat-form-field>
+              <mat-label>{{ 'asset_user.first_name_label' | translate }}</mat-label>
+              <input matInput placeholder="{{ 'asset_user.first_name_placeholder' | translate }}" formControlName="asset_user_first_name"
+                     required>
+              <mat-error *ngIf="reactiveForm.get('asset_user_first_name').invalid">{{ 'general.input_required' | translate }}
+              </mat-error>
+            </mat-form-field>
+              </div>
+              <div class="col-sm-6">
+                <mat-form-field>
+                  <mat-label>{{ 'asset_user.last_name_label' | translate }}</mat-label>
+                  <input matInput placeholder="{{ 'asset_user.last_name_placeholder' | translate }}" formControlName="asset_user_last_name"
+                         required>
+                  <mat-error *ngIf="reactiveForm.get('asset_user_last_name').invalid">{{ 'general.input_required' | translate }}
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <mat-form-field>
+                <mat-label>{{ 'asset_user.tel_label' | translate }}</mat-label>
+                <input matInput placeholder="{{ 'asset_user.tel_placeholder' | translate }}" formControlName="asset_user_tel">
+                </mat-form-field>
+              </div>
+              <div class="col-sm-6">
+                <mat-form-field>
+                  <mat-label>{{ 'asset_user.mobile_label' | translate }}</mat-label>
+                  <input matInput placeholder="{{ 'asset_user.mobile_placeholder' | translate }}" formControlName="asset_user_mobile">
+                </mat-form-field>
+              </div>
+            </div>
+            <mat-form-field>
+              <mat-label>{{ 'asset_user.email_label' | translate }}</mat-label>
+              <input matInput placeholder="{{ 'asset_user.email_placeholder' | translate }}" formControlName="asset_user_email">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Weitere Informationen</mat-label>
+              <textarea matInput placeholder="Weitere Informationen" formControlName="asset_user_text"></textarea>
+            </mat-form-field>
+            <div class="row">
+              <div class="col-sm-6">
+                <mat-slide-toggle name="asset_user_active" color="primary" formControlName="isActive">
+                  {{ 'asset_user.active_label' | translate }}
+                </mat-slide-toggle>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button mat-raised-button color="primary" class="m-t-8" (click)="onSubmitSave(0)" [disabled]="reactiveForm.invalid">Speichern und zurück</button>
+        <button mat-raised-button color="primary" class="m-t-8 m-l-8" (click)="onSubmitSave(1)" [disabled]="reactiveForm.invalid">Speichern und weiteren Ansprechpartner anlegen</button>
+        <button *ngIf="isAdmin()" mat-raised-button color="danger" class="m-t-8 m-l-8" (click)="onSubmitDelete()" [disabled]="reactiveForm.invalid">Ansprechpartner löschen</button>
+      </form>
+    </mat-card>
+  </div>
+</div>

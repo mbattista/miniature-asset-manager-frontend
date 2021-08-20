@@ -1,0 +1,213 @@
+<page-header class="bg-blue-600"></page-header>
+
+<mat-card>
+<form>
+  <mat-form-field class="m-r-8">
+    <input matInput [(ngModel)]="query.q" name="q" placeholder="{{translations.search_placeholder}}">
+  </mat-form-field>
+
+  <mat-form-field class="m-r-8">
+    <mat-select [(ngModel)]="query.sort" name="sort" placeholder="{{translations.sort_placeholder}}">
+      <mat-option>-- None --</mat-option>
+      <mat-option *ngFor="let option of sort_options" value="{{option.value}}">{{option.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="m-r-8">
+    <mat-select [(ngModel)]="query.order" name="order" placeholder="{{translations.sort_way_placeholder}}">
+      <mat-option>-- None --</mat-option>
+      <mat-option *ngFor="let option of sort_way_options" value="{{option.value}}">{{option.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-slide-toggle [(ngModel)]="!!query.show_inactive" name="inactive">Inaktive Ausblenden</mat-slide-toggle>
+
+  <button class="m-r-8" mat-raised-button color="primary" (click)="loadPlacesSearch()">{{translations.search}}</button>
+  <div class="customizer-handle"
+       matTooltip="Neuen Standort erstellen">
+    <a mat-fab [routerLink]="['create']">
+      <mat-icon>add</mat-icon>
+    </a>
+  </div>
+</form>
+</mat-card>
+
+<ng-container *ngIf="showTable">
+<mat-card>
+<mtx-grid [data]="list"
+          [columns]="columns"
+          [loading]="isLoading"
+          [multiSelectable]="multiSelectable"
+          [rowSelectable]="rowSelectable"
+          [hideRowSelectionCheckbox]="hideRowSelectionCheckbox"
+          [rowHover]="rowHover"
+          [rowStriped]="rowStriped"
+          [showToolbar]="showToolbar"
+          [columnHideable]="columnHideable"
+          [columnMovable]="columnMovable"
+          [expandable]="expandable"
+          [expansionTemplate]="expansionTpl"
+          [pageOnFront]="false"
+          [showPaginator]="showPaginator"
+          [pageSizeOptions]="[5,10,50,100]"
+          [pageIndex]="query.page"
+          [columnMenuButtonText]="columnMenuButtonText"
+          [toolbarTitle]="toolbarTitle"
+          [pageSize]="query.per_page"
+          [length]="placeLength"
+          (page)="changePage($event)"
+>
+</mtx-grid>
+</mat-card>
+</ng-container>
+<ng-template #expansionTpl let-row let-index="index" let-col="colDef">
+  <div style="width: 100%">
+    <b>Ansprechpartner:</b>
+    <br />
+    <ng-container *ngIf="row.end_user">
+      <div *ngFor="let end_user of row.end_user">
+        <div fxFlex>{{end_user.first_name}}</div>
+        <div fxFlex>{{end_user.last_name}}</div>
+        <div fxFlex>{{end_user.tel}}</div>
+        <div fxFlex>{{end_user.email}}</div>
+      </div>
+    </ng-container>
+  </div>
+  <div style="width: 100%">
+    <b>{{ 'place.opening_time' | translate }}:</b>
+    <br />
+    <span style="white-space: pre-wrap;">{{row.opening_times}}</span>
+  </div>
+  <div style="width: 100%">
+    <b>{{translations.text}}:</b>
+    <br />
+    <span style="white-space: pre-wrap;">{{row.text}}</span>
+  </div>
+</ng-template>
+<ng-template #activeTpl let-row let-index="index" let-col="colDef">
+  <mat-slide-toggle [checked]="!!row.active" disabled></mat-slide-toggle>
+</ng-template>
+
+<ng-container *ngIf="!showTable">
+<mat-accordion>
+  <mat-expansion-panel *ngFor="let place of list">
+    <mat-expansion-panel-header>
+      <mat-panel-description>
+        {{place.city}}
+      </mat-panel-description>
+      <mat-panel-title>{{place.name}}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="row">
+      <div class="w-40">
+        Name:
+      </div>
+      <div class="w-60">
+        {{place.name}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="w-40">
+        Anschrift:
+      </div>
+      <div class="w-60">
+        {{place.street}} {{place.number}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="w-40">
+        Ort:
+      </div>
+      <div class="w-60">
+        {{place.postcode}} {{place.city}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="w-40">
+        Kontakt:
+      </div>
+      <div class="w-60">
+        {{place.tel1}}
+      </div>
+    </div>
+    <div class="row" *ngIf="place.tel2">
+      <div class="w-40">
+      </div>
+      <div class="w-60">
+        {{place.tel2}}
+      </div>
+    </div>
+    <div class="row" *ngIf="place.tel3">
+      <div class="w-40">
+      </div>
+      <div class="w-60">
+        {{place.tel3}}
+      </div>
+    </div>
+    <div class="row" *ngIf="place.tel4">
+      <div class="w-40">
+      </div>
+      <div class="w-60">
+        {{place.tel4}}
+      </div>
+    </div>
+    <div class="row" *ngIf="place.fax">
+      <div class="w-40">
+      </div>
+      <div class="w-60">
+        {{place.fax}}
+      </div>
+    </div>
+    <div class="row" *ngIf="place.email">
+      <div class="w-40">
+        Email:
+      </div>
+      <div class="w-60">
+        {{place.email}}
+      </div>
+    </div>
+    <div class="row" *ngIf="place.website">
+      <div class="w-40">
+        Webseite:
+      </div>
+      <div class="w-60">
+        {{place.website}}
+      </div>
+    </div>
+    <div class="row" *ngIf="place.opening_times">
+      <div class="w-40">
+        Öffnungsz.:
+      </div>
+      <div class="w-60" style="white-space: pre-wrap;">{{place.opening_times}}
+      </div>
+    </div>
+    <div class="row" *ngIf="place.text">
+      <div class="w-40">
+        Weitere Informationen:
+      </div>
+      <div class="w-60" style="white-space: pre-wrap;">{{place.text}}
+      </div>
+    </div>
+    <div class="row" *ngIf="place.end_user">
+      <div class="w-40">
+        Anpsrechpartner:
+      </div>
+      <div class="w-60">
+        <div *ngFor="let end_user of place.end_user">
+          <div fxFlex>{{end_user.first_name}}</div>
+          <div fxFlex>{{end_user.last_name}}</div>
+          <div fxFlex>{{end_user.tel}}</div>
+          <div fxFlex>{{end_user.email}}</div>
+        </div>
+      </div>
+    </div>
+    <mat-action-row>
+      <button mat-button *ngIf="isAdmin" (click)="delete(place)">Löschen</button>
+      <a mat-button href="https://www.google.com/maps/search/?api=1&query={{place.street}}+{{place.number}}+{{place.postcode}}+{{place.city}}"
+         target="_blank">Maps öffnen</a>
+      <button mat-button (click)="navigateEdit(place)">Editieren</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+</mat-accordion>
+<mat-paginator [length]="placeLength" [pageSize]="query.per_page" [pageSizeOptions]="[5,10,50,100]"
+               (page)="changePage($event)">
+</mat-paginator>
+</ng-container>

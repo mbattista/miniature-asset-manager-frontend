@@ -1,0 +1,39 @@
+{
+  "menu": [{
+      "route": "dashboard",
+      "name": "dashboard",
+      "type": "link",
+      "icon": "dashboard"
+    },
+    {
+      "route": "overview/overview",
+      "name": "overview",
+      "type": "link",
+      "icon": "remove_red_eye"
+    },
+    {
+      "route": "data",
+      "name": "data",
+      "type": "sub",
+      "icon": "add",
+      "children": [
+        {
+          "route": "citrix",
+          "name": "citrix",
+          "type": "link"
+        },
+        {
+          "route": "assets",
+          "name": "assets",
+          "type": "link"
+        },
+        {
+          "route": "places",
+          "name": "places",
+          "icon": "add_location",
+          "type": "link"
+        }
+      ]
+    }
+  ]
+}

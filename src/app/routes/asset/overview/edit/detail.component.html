@@ -1,0 +1,145 @@
+<page-header [title]="assetTitle" class="bg-blue-600"></page-header>
+
+<div fxLayout="row wrap" class="matero-row">
+  <div fxFlex="100" fxFlex.lt-sm="100" class="matero-col">
+    <mat-card>
+      <mat-tab-group class="m--16">
+        <mat-tab label="Gerät">
+          <div class="m-16">
+            <mat-spinner *ngIf="isLoadingAsset$.value" color="indeterminate" [strokeWidth]="1"  aria-label="Loading"></mat-spinner>
+            <form [formGroup]="reactiveForm" class="form-field-full">
+              <div *ngIf="!isLoadingAsset$.value" fxLayout="row wrap" fxLayoutGap="8px grid">
+                <div fxFlex="100" fxFlex.lt-sm="100">
+                  <mat-form-field>
+                    <mat-label>{{ 'asset.name_label' | translate }}</mat-label>
+                    <input matInput required placeholder="{{ 'asset.name_placeholder' | translate }}"
+                           [matAutocomplete]="autocompleteName"
+                           formControlName="asset_name"
+                           (ngModelChange)="onFieldChangeName($event)">
+                    <mat-autocomplete #autocompleteName="matAutocomplete" [displayWith]="displayFnName.bind(this)">
+                      <mat-option *ngFor="let item of name_items" [value]="item.name">
+                        <span>{{ item.name }}</span>
+                      </mat-option>
+                    </mat-autocomplete>
+                    <mat-error *ngIf="reactiveForm.get('asset_name').invalid">{{ 'general.input_required' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>{{ 'asset.serial_label' | translate }}</mat-label>
+                    <input matInput placeholder="{{ 'asset.serial_placeholder' | translate }}" formControlName="asset_serial">
+                    <mat-error *ngIf="reactiveForm.get('asset_serial').invalid">{{ 'general.input_duplicate' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>{{ 'asset.teamviewer_id_label' | translate }}</mat-label>
+                    <input matInput placeholder="{{ 'asset.teamviewer_id_placeholder' | translate }}" formControlName="asset_teamviewer_id">
+                    <mat-error *ngIf="reactiveForm.get('asset_teamviewer_id').invalid">{{ 'general.input_duplicate' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+                  <mat-form-field class="w-full">
+                    <mat-label>{{ 'asset.citrix_label' | translate }}</mat-label>
+                    <mtx-select
+                      [items]="citrix_items"
+                      [typeahead]="citrixInput$"
+                      bindLabel="citrix_number"
+                      multiple="true"
+                      bindValue="id"
+                      formControlName="asset_citrix"
+                    ></mtx-select>
+                    <mat-error *ngIf="reactiveForm.get('asset_citrix').invalid">{{ 'general.input_duplicate' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field class="w-full">
+                    <mat-label>{{ 'asset.type_label' | translate }}</mat-label>
+                    <input matInput required
+                           [matAutocomplete]="autocompleteType"
+                           formControlName="asset_type"
+                           (ngModelChange)="onFieldChangeType($event)">
+                    <mat-autocomplete #autocompleteType="matAutocomplete" [displayWith]="displayFnType.bind(this)">
+                      <mat-option *ngFor="let item of type_items" [value]="item.type">
+                        <span>{{ item.type }}</span>
+                      </mat-option>
+                    </mat-autocomplete>
+                    <mat-error *ngIf="reactiveForm.get('asset_type').invalid">{{ 'general.input_required' | translate }}
+                    </mat-error>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>Text</mat-label>
+                    <textarea matInput name="asset_text" formControlName="asset_text"></textarea>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>Anlage Zeitpunkt</mat-label>
+                    <input matInput
+                           [matDatepicker]="fromPicker"
+                           formControlName="asset_date"
+                           (focus)="fromPicker.open()"
+                           aria-label="Anlage Zeitpunkt">
+                    <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #fromPicker></mat-datepicker>
+                  </mat-form-field>
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <mat-slide-toggle name="asset_ooo" color="primary" formControlName="isOOO">
+                        {{ 'asset.ooo_label' | translate }}
+                      </mat-slide-toggle>
+                    </div>
+                    <div class="col-sm-6">
+                      <mat-slide-toggle name="asset_active" color="primary" formControlName="isActive">
+                        {{ 'asset.active_label' | translate }}
+                      </mat-slide-toggle>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button mat-raised-button color="primary" class="m-t-8" (click)="onSubmitSave()" [disabled]="!reactiveForm.valid">{{ isCreate ? ('asset.save_storage' | translate) : (('asset.save_changes' | translate)) }}</button>
+            </form>
+          </div>
+        </mat-tab>
+        <mat-tab label="Historie" [disabled]="isCreate">
+          <div class="m-16">
+            <mat-spinner *ngIf="isLoadingHistory$.value" color="indeterminate" [strokeWidth]="1"  aria-label="Loading"></mat-spinner>
+            <mat-list *ngIf="!isLoadingHistory$.value">
+              <mat-list-item *ngIf="showTable"><span fxFlex><b>Standort-Name</b></span><span fxFlex><b>Standort-Stadt</b></span><span fxFlex><b>Lieferant</b></span><span fxFlex><b>Anlieferdatum</b></span><span><b>Abholdatum</b></span>
+                <div>&nbsp;</div>
+              </mat-list-item>
+              <ng-container *ngFor="let pa of placesAssets">
+                <mat-divider></mat-divider>
+                  <mat-list-item *ngIf="showTable"><span fxFlex>{{pa.place_name}}</span><span fxFlex>{{pa.city}}</span><span fxFlex>{{pa.dp_first_name}} {{pa.dp_last_name}} {{pa.external_person}}</span><span fxFlex>{{pa.iso_date_from ? pa.iso_date_from.split(' ')[0] : '&nbsp;'}}</span><span>{{pa.iso_date_until ? pa.iso_date_until.split(' ')[0] : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}}</span>
+                  <div>
+                    <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/places/edit/', pa.place_id]">edit</mat-icon>
+                  </div>
+                </mat-list-item>
+                <mat-list-item style="height: initial" *ngIf="!showTable"><div class="p-8"><div>{{pa.place_name}}</div><div>{{pa.city}}</div><div>{{pa.dp_first_name}} {{pa.dp_last_name}} {{pa.external_person}}</div><div>{{pa.iso_date_from ? pa.iso_date_from.split(' ')[0] : ''}} - {{pa.iso_date_until ? pa.iso_date_until.split(' ')[0] : ''}}
+                  <div>
+                    <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/places/edit/', pa.place_id]">edit</mat-icon>
+                  </div>
+                </div></div></mat-list-item>
+              </ng-container>
+            </mat-list>
+          </div>
+        </mat-tab>
+        <mat-tab label="Citrix - Historie" [disabled]="isCreate">
+          <div class="m-16">
+            <mat-spinner *ngIf="isLoadingCitrixHistory$.value" color="indeterminate" [strokeWidth]="1"  aria-label="Loading"></mat-spinner>
+            <mat-list *ngIf="!isLoadingCitrixHistory$.value">
+              <ng-container *ngFor="let pa of citrixAssets">
+                <mat-divider></mat-divider>
+                <mat-list-item *ngIf="showTable"><span fxFlex>{{pa.citrix_number}}</span><span>{{pa.from_date ? pa.from_date.split(' ')[0] : ''}} - {{pa.until ? pa.until.split(' ')[0] : ''}}</span>
+                  <div>
+                    <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/citrix/edit/', pa.citrix_id]">edit</mat-icon>
+                  </div>
+                </mat-list-item>
+                <mat-list-item style="height: initial" *ngIf="!showTable"><div class="p-8"><div>{{pa.citrix_number}}</div><div>{{pa.city}}</div><div>{{pa.from_date ? pa.from_date.split(' ')[0] : ''}} - {{pa.until ? pa.until.split(' ')[0] : ''}}
+                  <div>
+                    <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/citrix/edit/', pa.citrix_id]">edit</mat-icon>
+                  </div>
+                </div></div></mat-list-item>
+              </ng-container>
+            </mat-list>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card>
+  </div>
+</div>

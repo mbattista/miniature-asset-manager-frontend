@@ -1,0 +1,58 @@
+<page-header class="bg-blue-600"></page-header>
+
+<mat-card>
+<form>
+  <mat-form-field class="m-r-8">
+    <input matInput [(ngModel)]="query.q" name="q" placeholder="{{translations.search_placeholder}}">
+  </mat-form-field>
+
+  <mat-form-field class="m-r-8">
+    <mat-select [(ngModel)]="query.sort" name="sort" placeholder="{{translations.sort_placeholder}}">
+      <mat-option>-- None --</mat-option>
+      <mat-option *ngFor="let option of sort_options" value="{{option.value}}">{{option.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="m-r-8">
+    <mat-select [(ngModel)]="query.order" name="order" placeholder="{{translations.sort_way_placeholder}}">
+      <mat-option>-- None --</mat-option>
+      <mat-option *ngFor="let option of sort_way_options" value="{{option.value}}">{{option.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button class="m-r-8" mat-raised-button color="primary" (click)="loadAssetsSearch()">{{translations.search}}</button>
+</form>
+
+<mtx-grid [data]="list"
+          [columns]="columns"
+          [loading]="isLoading"
+          [multiSelectable]="multiSelectable"
+          [rowSelectable]="rowSelectable"
+          [hideRowSelectionCheckbox]="hideRowSelectionCheckbox"
+          [rowHover]="rowHover"
+          [rowStriped]="rowStriped"
+          [showToolbar]="showToolbar"
+          [columnHideable]="columnHideable"
+          [columnMovable]="columnMovable"
+          [pageOnFront]="false"
+          [showPaginator]="showPaginator"
+          [pageSizeOptions]="[5,10,50,100]"
+          [pageIndex]="query.page"
+          [columnMenuButtonText]="columnMenuButtonText"
+          [toolbarTitle]="toolbarTitle"
+          [pageSize]="query.per_page"
+          [length]="assetLength"
+          (page)="changePage($event)"
+>
+</mtx-grid>
+<ng-template #activeTpl let-row let-index="index" let-col="colDef">
+  <mat-slide-toggle [checked]="!!row.active" disabled></mat-slide-toggle>
+</ng-template>
+</mat-card>
+
+<div class="customizer-handle"
+     matTooltip="Neuen Sachbearbeiter erstellen">
+  <a mat-fab [routerLink]="['create']">
+    <mat-icon>add</mat-icon>
+  </a>
+</div>

@@ -1,0 +1,156 @@
+<page-header class="bg-blue-600" title="Anlage" showBreadCrumb="false"></page-header>
+
+<div fxLayout="row wrap" class="matero-row">
+  <div fxFlex="100" fxFlex.lt-sm="100" class="matero-col">
+    <form [formGroup]="reactiveForm" class="form-field-full">
+    <mat-card>
+      <mat-spinner *ngIf="isLoadingAsset$.value" color="indeterminate" [strokeWidth]="1"  aria-label="Loading"></mat-spinner>
+      <mat-card-title>Standort</mat-card-title>
+        <div *ngIf="!isLoadingAsset$.value" fxLayout="row wrap" fxLayoutGap="8px grid">
+
+          <div fxFlex="100" fxFlex.lt-sm="100">
+            <mat-form-field class="w-full">
+              <mat-label>{{ 'places_assets.places_assets_place_label' | translate }}</mat-label>
+              <input matInput required readonly
+                     [matAutocomplete]="autocompletePlace"
+                     formControlName="places_assets_place"
+                     (ngModelChange)="onFieldChangePlace($event)">
+              <mat-autocomplete #autocompletePlace="matAutocomplete" [displayWith]="displayFnPlace.bind(this)">
+                <mat-option *ngFor="let item of place_items" [value]="item.id">
+                  <span>{{ item.name }} {{item.city}}</span>
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+        </div>
+    </mat-card>
+      <mat-card>
+        <mat-spinner *ngIf="isLoadingAsset$.value" color="indeterminate" [strokeWidth]="1"  aria-label="Loading"></mat-spinner>
+        <mat-card-title>Geräte am Standort</mat-card-title>
+        <div *ngIf="!isLoadingAsset$.value" fxLayout="row wrap" fxLayoutGap="8px grid">
+
+          <div fxFlex="100" fxFlex.lt-sm="100">
+          <mat-form-field class="w-full">
+              <mat-label>{{ text.assets }}</mat-label>
+              <mtx-select [disabled]="!isDelivery"
+                     formControlName="places_assets_assets"
+                          [items]="manyLists"
+                          bindLabel="name_combined"
+                          bindValue="id"
+                          [multiple]=true
+                          (remove)="addBackToStorage($event)"
+              >
+                <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                  <div ><span>Name: </span><span>{{item.name}}</span></div>
+                  <small><b>Type:</b><span> {{item.type}}</span> | <b>Seriennummer:</b><span> {{item.serial}}</span> | <b>Citrix:</b><span> {{item.citrix}}</span></small>
+                </ng-template>
+
+              </mtx-select>
+          </mat-form-field>
+          </div>
+          <div fxFlex="100" fxFlex.lt-sm="100">
+            <mat-form-field class="w-full">
+              <mat-label>{{ text.assets_storage }}</mat-label>
+              <mtx-select [disabled]="isDelivery"
+                formControlName="places_assets_storage"
+                [items]="backToStorage"
+                bindLabel="name_combined"
+                bindValue="id"
+                [multiple]=true
+                [typeahead]="backToStorageInput$"
+                (scrollToEnd)="loadMoreBackToStorage()"
+                (add)="backToStorageAddHelper($event)"
+                (remove)="backToStorageRemoveHelper($event)"
+                virtualScroll="true"
+              >
+                <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                  <div ><span>Name: </span><span>{{item.name}}</span></div>
+                  <small><b>Type:</b><span> {{item.type}}</span> | <b>Seriennummer:</b><span> {{item.serial}}</span> | <b>Citrix:</b><span> {{item.citrix}}</span></small>
+                </ng-template>
+
+              </mtx-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card>
+
+
+        <mat-card *ngFor="let other_assets of backToStorageCitrixList | arrayFilter:reactiveForm.controls.places_assets_storage.value">
+          <mat-card-title>{{other_assets.name_combined}}</mat-card-title>
+          <ng-container *ngIf="citrix_items[other_assets.id] && citrix_items[other_assets.id].loading_finished">
+            <mat-form-field class="w-full">
+              <mat-label>{{ 'asset.citrix_label' | translate }}</mat-label>
+              <mtx-select
+                [(ngModel)]="citrix_items[other_assets.id].active_citrix"
+                [items]="citrix_items[other_assets.id].citrix_items"
+                [typeahead]="citrix_items[other_assets.id].Input$"
+                bindLabel="citrix_number"
+                multiple="true"
+                bindValue="id"
+                virtualScroll="true"
+                [ngModelOptions]="{standalone: true}"
+              ></mtx-select>
+            </mat-form-field>
+          </ng-container>
+        </mat-card>
+
+            <mat-card>
+              <mat-spinner *ngIf="isLoadingAsset$.value" color="indeterminate" [strokeWidth]="1"  aria-label="Loading"></mat-spinner>
+              <mat-card-title>Lieferdetails</mat-card-title>
+              <div *ngIf="!isLoadingAsset$.value" fxLayout="row wrap" fxLayoutGap="8px grid">
+                <div fxFlex="100" fxFlex.lt-sm="100">
+
+                <mat-form-field class="w-full">
+                <mat-label>Zuständige Person</mat-label>
+                <mtx-select
+                  [items]="deliverer_items"
+                  bindLabel="name_combined"
+                  bindValue="id"
+                  [typeahead]="delivererInput$"
+                  formControlName="deliverer_person"
+                  virtualScroll="true"
+                  (change)="updateErrors()"
+                >
+                  <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                    <div><span>{{ item.first_name }} {{item.last_name}}</span></div>
+                  </ng-template>
+                </mtx-select>
+                <mat-error *ngIf="reactiveForm.get('deliverer_person').invalid">Zuständige Person oder Externe Person muss ausgefüllt sein
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+              <mat-label>{{ 'places_assets.external_person' | translate }}</mat-label>
+              <input matInput
+                     [matAutocomplete]="autocompleteType"
+                     formControlName="external_person"
+                     (ngModelChange)="onFieldChangeType($event)"
+                     (change)="updateErrors()"
+                     aria-label="Externe Person"
+              >
+              <mat-autocomplete #autocompleteType="matAutocomplete" [displayWith]="displayFnType.bind(this)">
+                <mat-option *ngFor="let item of external_person_items" [value]="item.external_person">
+                  <span>{{ item.external_person }}</span>
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error *ngIf="reactiveForm.get('external_person').invalid">Zuständige Person oder Externe Person muss ausgefüllt sein
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>{{ 'places_assets.from_datetimez_label' | translate }}</mat-label>
+              <input matInput required
+                     [matDatepicker]="fromPicker"
+                     formControlName="from_datetimez"
+                     (focus)="fromPicker.open()"
+                     aria-label="Lieferdatum">
+              <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+              <mat-datepicker #fromPicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+        <button mat-raised-button color="primary" class="m-t-8" (click)="onSubmitSave()" [disabled]="reactiveForm.invalid">{{ isCreate ? ('asset_user.save' | translate) : (('asset_user.save_changes' | translate)) }}</button>
+    </mat-card>
+  </form>
+  </div>
+</div>

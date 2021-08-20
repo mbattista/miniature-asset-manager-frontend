@@ -1,0 +1,94 @@
+<page-header class="bg-blue-600" title="Detail / Anlage"></page-header>
+
+<mat-card *ngIf="place !== 0">
+  <mat-card-title>{{ city }}<span fxFlex></span>Anlagen vom {{ date }}</mat-card-title>
+  <mat-card-subtitle>{{ name }} | {{ city }}</mat-card-subtitle>
+  <ng-container>
+    <div class="row"><div class="w-100">&nbsp;</div></div>
+    <div class="row">
+      <div class="w-100">
+        <b>Geräte</b>
+      </div>
+    </div>
+    <ng-container *ngIf="showTable">
+      <div class="row">
+        <div fxFlex>
+          <b>Name</b>
+        </div>
+        <div fxFlex>
+          <b>Type</b>
+        </div>
+        <div fxFlex>
+          <b>Seriennummer</b>
+        </div>
+        <div fxFlex>
+          <b>Lieferant</b>
+        </div>
+        <div>
+          <b>Ein / Ausgehend</b>
+          <span class="edit-filler">&nbsp;</span>
+        </div>
+      </div>
+      <ng-container *ngFor="let item of listThings; trackBy: customFTrackBy">
+        <div class="row">
+          <div fxFlex>
+            {{item.name}}
+          </div>
+          <div fxFlex>
+            {{item.type}}
+          </div>
+          <div fxFlex>
+            {{item.serial}}
+          </div>
+          <div fxFlex>
+            {{item.person}}
+          </div>
+          <div>
+            <ng-container *ngIf="!item.incoming">Vom Standort abgeholt</ng-container>
+            <ng-container *ngIf="item.incoming">An Standort geliefert</ng-container>
+            <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/assets/edit/', item.id]">edit</mat-icon>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="!showTable">
+      <div>
+        <div>
+          <b>Name</b>
+        </div>
+        <div>
+          <b>Type</b>
+        </div>
+        <div>
+          <b>Seriennummer</b>
+        </div>
+        <div>
+          <b>Person</b>
+        </div>
+        <div>
+          <b>Ein / Ausgehend</b>
+          <span class="edit-filler">&nbsp;</span>
+        </div>
+      </div>
+      <ng-container *ngFor="let item of listThings let lastItem = last; trackBy: customFTrackBy">
+        <div class="row p-t-8">
+          <div fxFlex>
+            {{item.name}}<br />
+            {{item.type}}<br />
+            {{item.serial}} <br />
+            {{item.person}}<br />
+            {{item.incoming}}<br />
+          </div>
+          <div>
+            <mat-icon color="primary" style="cursor: pointer" [routerLink]="['/data/assets/edit/', item.id]">edit</mat-icon>
+          </div>
+        </div>
+        <mat-divider *ngIf="!lastItem"></mat-divider>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+  <mat-card-actions *ngIf="place !== assetPlace" align="end">
+    <a mat-raised-button color="primary" [routerLink]="['/overview/return/edit/', place]">Neue Abholung</a>
+    <a mat-raised-button color="primary" [routerLink]="['/overview/delivery/edit/', place]">Neue Lieferung</a>
+  </mat-card-actions>
+</mat-card>

@@ -1,0 +1,92 @@
+<page-header class="bg-blue-600"></page-header>
+
+<section>
+  <mat-card>
+    <h3>{{ viewDate | calendarDate: view + 'ViewTitle':locale }}</h3>
+
+    <div class="row">
+    <div class="col-md-9">
+    <form>
+      <mat-form-field class="m-r-8">
+        <input matInput [(ngModel)]="filter.q" name="q" placeholder="Suchbegriff">
+      </mat-form-field>
+
+      <mat-form-field class="m-r-8">
+        <mat-select [(ngModel)]="filter.person" name="sort" placeholder="Personen">
+          <mat-option>-- None --</mat-option>
+          <mat-option *ngFor="let option of filter_person" value="{{option.value}}"><span style="color: {{option.color}}">{{option.name}}</span></mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="m-r-8">
+        <mat-select [(ngModel)]="filter.place" name="order" placeholder="Standorte">
+          <mat-option>-- None --</mat-option>
+          <mat-option *ngFor="let option of filter_place" value="{{option.value}}"><span style="color: {{option.color}}">{{option.name}}</span></mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button class="m-r-8" mat-raised-button color="primary" (click)="fetchDates()">Filter</button>
+      <button class="m-r-8" mat-raised-button color="secondary" (click)="changeEventColor()">{{ eventColorText }}</button>
+    </form>
+    </div>
+      <div class="col-md-3">
+        <div class="btn-group">
+          <button
+            mat-raised-button
+            color="primary"
+            mwlCalendarPreviousView
+            [view]="view"
+            [(viewDate)]="viewDate"
+            (viewDateChange)="fetchDates()"
+          >
+            Vorheriger Monat
+          </button>
+          <button
+            mat-raised-button
+            class="btn btn-outline-secondary"
+            mwlCalendarToday
+            [(viewDate)]="viewDate"
+            (viewDateChange)="fetchDates()"
+          >
+            Heute
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            class="btn btn-primary"
+            mwlCalendarNextView
+            [view]="view"
+            [(viewDate)]="viewDate"
+            (viewDateChange)="fetchDates()"
+          >
+            Nächster Monat
+          </button>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+
+  <div *ngIf="events$ | async; let events">
+    <mwl-calendar-month-view
+      [viewDate]="viewDate"
+      [events]="events"
+      [weekStartsOn]="weekStartsOn"
+      [locale]="locale"
+      [refresh]="refresh"
+      [activeDayIsOpen]="activeDayIsOpen"
+      (dayClicked)="dayClicked($event.day)"
+      (eventClicked)="eventClicked($event.event)"
+    >
+    </mwl-calendar-month-view>
+  </div>
+
+  <ng-container *ngFor="let item of listThings">
+    <mat-card>
+      <mat-card-title>{{ item.from_datetimez ? item.from_datetimez.split(' ')[0] : 'Unbekanntes Datum' }}</mat-card-title>
+      <mat-card-subtitle>{{ item.place_name }} | {{ item.city }}</mat-card-subtitle>
+      Gerät: {{ item.name }} mit Seriennummern: {{ item.serial }}<br>
+      Lieferant: {{item.dp_first_name}} {{item.dp_last_name}} {{item.external_person}}<br>
+      Abholer: {{item.rp_first_name}} {{item.rp_last_name}}
+    </mat-card>
+  </ng-container>
+</section>

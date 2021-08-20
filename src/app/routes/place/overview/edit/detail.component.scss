@@ -1,0 +1,8 @@
+@import '~@angular/material/theming';
+
+$warn: mat-palette($mat-red);
+
+.edit-filler {
+  display: inline-block;
+  width: 24px;
+}
